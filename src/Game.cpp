@@ -37,6 +37,7 @@ Game::Game() : window(sf::VideoMode(800, 600), "Pong"),
 {
     initWindow();
     initGameObjects();
+    initScores();
 }
 
 Game::Game(int windowWidth, int windowHeight, int frameRate) :
@@ -45,6 +46,7 @@ Game::Game(int windowWidth, int windowHeight, int frameRate) :
 {
     initWindow();
     initGameObjects();
+    initScores();
 }
 
 Game::~Game() {}
@@ -111,6 +113,9 @@ void Game::render()
     window.draw(rightPaddle);
     window.draw(ball);
 
+    window.draw(leftScoreText);
+    window.draw(rightScoreText);
+
     window.display();
 }
 
@@ -145,11 +150,18 @@ void Game::updateBall()
     if (ball.getPosition().y < 0 || ball.getPosition().y > window.getSize().y - 2 * ball.getRadius())
         ballDirection.y *= -1;
 
-    if (ball.getPosition().x < 0 || ball.getPosition().x > window.getSize().x - 2 * ball.getRadius())
+    if (ball.getPosition().x < 0)
     {
-        ballDirection.x *= -1; // increase scores instead
+        rightScore += 1;
+        rightScoreText.setString(std::to_string(rightScore));
+        initGameObjects();
     }
-
+    else if (ball.getPosition().x > window.getSize().x - 2 * ball.getRadius())
+    {
+        leftScore += 1;
+        leftScoreText.setString(std::to_string(leftScore));
+        initGameObjects();
+    }
 }
 
 void Game::checkCollisions()
@@ -171,3 +183,26 @@ void Game::checkCollisions()
     }
 }
 
+void Game::initScores()
+{
+    if (!font.loadFromFile("assets/Font/RobotoMono-Bold.ttf"))
+    {
+        backgroundColor = sf::Color(80, 0, 0, 255);
+        return;
+    }
+
+    const float windowHalfWidth = window.getSize().x / 2;
+
+    leftScoreText.setFont(font);
+    leftScoreText.setCharacterSize(24);
+    leftScoreText.setFillColor(sf::Color::White);
+    leftScoreText.setPosition(windowHalfWidth - windowHalfWidth / 2, 20);
+
+    rightScoreText.setFont(font);
+    rightScoreText.setCharacterSize(24);
+    rightScoreText.setFillColor(sf::Color::White);
+    rightScoreText.setPosition(windowHalfWidth + windowHalfWidth / 2, 20);
+
+    leftScoreText.setString(std::to_string(leftScore));
+    rightScoreText.setString(std::to_string(rightScore));
+}

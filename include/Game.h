@@ -24,6 +24,8 @@ private:
     void updateBall();
     void checkCollisions();
 
+    void initScores();
+
     sf::RenderWindow window;
     int frameRate;
     sf::Color backgroundColor;
@@ -41,4 +43,11 @@ private:
     const float paddleSpeed = 5.0f;
     const float ballSpeed = 3.0f;
     sf::Vector2f ballDirection;
+
+    int leftScore = 0;
+    int rightScore = 0;
+
+    sf::Font font;
+    sf::Text leftScoreText;
+    sf::Text rightScoreText;
 };
