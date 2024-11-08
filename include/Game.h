@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-
+#include <vector>
 
 class Game
 {
@@ -26,6 +26,10 @@ private:
 
     void initScores();
     void initCountdown();
+
+    void updateBallTrail();
+    void renderBallTrail();
+    void clearBallTrail();
 
     sf::RenderWindow window;
     int frameRate;
@@ -55,4 +59,7 @@ private:
 
     sf::Clock roundStartClock;
     sf::Text countdownText;
+
+    std::vector<sf::CircleShape> ballTrail;
+    const float trailFactor = 0.98f;
 };

@@ -88,6 +88,8 @@ void Game::initGameObjects()
     ball.setPosition(window.getSize().x / 2 - ball.getRadius(), window.getSize().y / 2 - ball.getRadius());
     ball.setFillColor(sf::Color::Red);
     ballDirection = sf::Vector2f(getRandomDirection() * ballSpeed, getRandomDirection() * ballSpeed);
+
+    clearBallTrail();
 }
 
 void Game::processEvents()
@@ -126,6 +128,8 @@ void Game::update()
 void Game::render()
 {
     window.clear(backgroundColor);
+
+    renderBallTrail();
 
     window.draw(leftPaddle);
     window.draw(rightPaddle);
@@ -166,6 +170,7 @@ void Game::updatePaddles()
 
 void Game::updateBall()
 {
+    updateBallTrail();
     ball.move(ballDirection);
 
     if (ball.getPosition().y < 0 || ball.getPosition().y > window.getSize().y - 2 * ball.getRadius())
@@ -235,3 +240,42 @@ void Game::initCountdown()
     countdownText.setString("3");
 }
 
+void Game::updateBallTrail()
+{
+    sf::CircleShape trailPoint(ball.getRadius());
+    trailPoint.setPosition(ball.getPosition());
+    sf::Color trailColor = sf::Color(200, 0, 0, 180);
+    trailPoint.setFillColor(trailColor);
+    ballTrail.push_back(trailPoint);
+
+    for (auto& point : ballTrail) {
+        // reduce size
+        point.setRadius(point.getRadius() * trailFactor);
+
+        // fade color
+        sf::Color color = point.getFillColor();
+        if (color.a > 0) {
+            color.a = static_cast<sf::Uint8>(color.a * trailFactor);
+            point.setFillColor(color);
+        }
+    }
+
+    // remove points that have become too small or invisible
+    ballTrail.erase(
+        std::remove_if(ballTrail.begin(), ballTrail.end(),
+            [](const sf::CircleShape& point) {
+                return point.getRadius() < 1.0f || point.getFillColor().a == 0;
+            }
+        ), ballTrail.end()
+    );
+}
+
+void Game::renderBallTrail()
+{
+    for (const auto& point : ballTrail) window.draw(point);
+}
+
+void Game::clearBallTrail()
+{
+    ballTrail.clear();
+}
