@@ -1,4 +1,36 @@
 #include "Game.h"
+#include <random>
+#include <cmath>
+
+int getRandomDirection() {
+    static std::random_device rd;  // Seed for randomness
+    static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    std::uniform_int_distribution<int> dist(0, 1);
+
+    return dist(gen) == 0 ? -1 : 1;
+}
+
+int getRandomStrength(float max) {
+    static std::random_device rd;  // Seed for randomness
+    static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    std::uniform_real_distribution<float> dist(0, max);
+
+    return dist(gen);
+}
+
+void enforceBallSpeedLimit(sf::Vector2f& ballDirection, float ballSpeed)
+{
+    float magnitude = std::sqrt(ballDirection.x * ballDirection.x + ballDirection.y * ballDirection.y);
+
+    if (magnitude > ballSpeed)
+    {
+        float scale = ballSpeed / magnitude;
+
+        ballDirection.x *= scale;
+        ballDirection.y *= scale;
+    }
+}
+
 
 Game::Game() : window(sf::VideoMode(800, 600), "Pong"),
     frameRate(60), isPlaying(true)
@@ -46,7 +78,7 @@ void Game::initGameObjects()
     ball.setRadius(ballRadius);
     ball.setPosition(window.getSize().x / 2 - ball.getRadius(), window.getSize().y / 2 - ball.getRadius());
     ball.setFillColor(sf::Color::Red);
-    ballDirection = sf::Vector2f(ballSpeed, ballSpeed);
+    ballDirection = sf::Vector2f(getRandomDirection() * ballSpeed, getRandomDirection() * ballSpeed);
 }
 
 void Game::processEvents()
@@ -122,6 +154,20 @@ void Game::updateBall()
 
 void Game::checkCollisions()
 {
+    sf::FloatRect ballBounds = ball.getGlobalBounds();
+    sf::FloatRect leftPaddleBounds = leftPaddle.getGlobalBounds();
+    sf::FloatRect rightPaddleBounds = rightPaddle.getGlobalBounds();
 
+    if (ballBounds.intersects(leftPaddleBounds)) {
+        ballDirection.x = std::abs(ballDirection.x);
+        ballDirection.y += getRandomDirection() * getRandomStrength(2.0f);
+        enforceBallSpeedLimit(ballDirection, ballSpeed);
+    }
+
+    if (ballBounds.intersects(rightPaddleBounds)) {
+        ballDirection.x = -std::abs(ballDirection.x);
+        ballDirection.y += getRandomDirection() * getRandomStrength(2.0f);
+        enforceBallSpeedLimit(ballDirection, ballSpeed);
+    }
 }
 
