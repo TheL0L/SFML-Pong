@@ -32,19 +32,7 @@ void enforceBallSpeedLimit(sf::Vector2f& ballDirection, float ballSpeed)
 }
 
 
-Game::Game() : window(sf::VideoMode(800, 600), "Pong"),
-    frameRate(60), isPlaying(true), roundStarting(true),
-    randomEngine(std::random_device{}()), difficultyIntervalDist(5, 15)
-{
-    initWindow();
-    initGameObjects();
-    initScores();
-    initCountdown();
-
-    nextDifficultyIncrease = difficultyIntervalDist(randomEngine);
-}
-
-Game::Game(int windowWidth, int windowHeight, int frameRate) :
+Game::Game(int windowWidth = 800, int windowHeight = 600, int frameRate = 60) :
     window(sf::VideoMode(windowWidth, windowHeight), "Pong"),
     frameRate(frameRate), isPlaying(true), roundStarting(true),
     randomEngine(std::random_device{}()), difficultyIntervalDist(5, 15)

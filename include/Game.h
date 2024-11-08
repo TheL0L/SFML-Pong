@@ -7,7 +7,6 @@
 class Game
 {
 public:
-    Game();
     Game(int windowWidth, int windowHeight, int frameRate);
     ~Game();
 
