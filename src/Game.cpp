@@ -27,10 +27,10 @@ void Game::run()
     }
 }
 
-
 void Game::initWindow()
 {
     window.setFramerateLimit(this->frameRate);
+    backgroundColor = sf::Color::Black;
 }
 
 void Game::initGameObjects()
@@ -55,6 +55,12 @@ void Game::processEvents()
     while (window.pollEvent(event))
     {
         if (event.type == sf::Event::Closed) window.close();
+
+        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
+        {
+            this->isPlaying = !this->isPlaying;
+            backgroundColor = this->isPlaying ? sf::Color::Black : sf::Color(0, 0, 80, 255);
+        }
     }
 }
 
@@ -67,7 +73,7 @@ void Game::update()
 
 void Game::render()
 {
-    window.clear();
+    window.clear(backgroundColor);
 
     window.draw(leftPaddle);
     window.draw(rightPaddle);

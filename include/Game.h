@@ -26,6 +26,7 @@ private:
 
     sf::RenderWindow window;
     int frameRate;
+    sf::Color backgroundColor;
 
     sf::RectangleShape leftPaddle;
     sf::RectangleShape rightPaddle;
