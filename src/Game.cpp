@@ -1,20 +1,14 @@
 #include "Game.h"
 #include <cmath>
 
-int getRandomDirection() {
-    static std::random_device rd;  // Seed for randomness
-    static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+int getRandomDirection(std::mt19937& randomEngine) {
     std::uniform_int_distribution<int> dist(0, 1);
-
-    return dist(gen) == 0 ? -1 : 1;
+    return dist(randomEngine) == 0 ? -1 : 1;
 }
 
-int getRandomStrength(float max) {
-    static std::random_device rd;  // Seed for randomness
-    static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+int getRandomStrength(std::mt19937& randomEngine, float max) {
     std::uniform_real_distribution<float> dist(0, max);
-
-    return dist(gen);
+    return dist(randomEngine);
 }
 
 void enforceBallSpeedLimit(sf::Vector2f& ballDirection, float ballSpeed)
@@ -99,7 +93,7 @@ void Game::initGameObjects()
     ball.setRadius(ballRadius);
     ball.setPosition(window.getSize().x / 2 - ball.getRadius(), window.getSize().y / 2 - ball.getRadius());
     ball.setFillColor(sf::Color::Red);
-    ballDirection = sf::Vector2f(getRandomDirection() * ballSpeed, getRandomDirection() * ballSpeed);
+    ballDirection = sf::Vector2f(getRandomDirection(randomEngine) * ballSpeed, getRandomDirection(randomEngine) * ballSpeed);
 
     clearBallTrail();
 }
@@ -217,13 +211,13 @@ void Game::checkCollisions()
 
     if (ballBounds.intersects(leftPaddleBounds)) {
         ballDirection.x = std::abs(ballDirection.x);
-        ballDirection.y += getRandomDirection() * getRandomStrength(2.0f);
+        ballDirection.y += getRandomDirection(randomEngine) * getRandomStrength(randomEngine, 2.0f);
         enforceBallSpeedLimit(ballDirection, ballSpeed);
     }
 
     if (ballBounds.intersects(rightPaddleBounds)) {
         ballDirection.x = -std::abs(ballDirection.x);
-        ballDirection.y += getRandomDirection() * getRandomStrength(2.0f);
+        ballDirection.y += getRandomDirection(randomEngine) * getRandomStrength(randomEngine, 2.0f);
         enforceBallSpeedLimit(ballDirection, ballSpeed);
     }
 }
