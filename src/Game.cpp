@@ -33,20 +33,22 @@ void enforceBallSpeedLimit(sf::Vector2f& ballDirection, float ballSpeed)
 
 
 Game::Game() : window(sf::VideoMode(800, 600), "Pong"),
-    frameRate(60), isPlaying(true)
+    frameRate(60), isPlaying(true), roundStarting(true)
 {
     initWindow();
     initGameObjects();
     initScores();
+    initCountdown();
 }
 
 Game::Game(int windowWidth, int windowHeight, int frameRate) :
     window(sf::VideoMode(windowWidth, windowHeight), "Pong"),
-    frameRate(frameRate), isPlaying(true)
+    frameRate(frameRate), isPlaying(true), roundStarting(true)
 {
     initWindow();
     initGameObjects();
     initScores();
+    initCountdown();
 }
 
 Game::~Game() {}
@@ -106,8 +108,19 @@ void Game::processEvents()
 void Game::update()
 {
     updatePaddles();
-    updateBall();
-    checkCollisions();
+    if (roundStarting)
+    {
+        int elapsedSeconds = static_cast<int>(roundStartClock.getElapsedTime().asSeconds());
+
+        if (elapsedSeconds < 3)
+            countdownText.setString(std::to_string(3 - elapsedSeconds));
+        else roundStarting = false;
+    }
+    else
+    {
+        updateBall();
+        checkCollisions();
+    }
 }
 
 void Game::render()
@@ -120,6 +133,9 @@ void Game::render()
 
     window.draw(leftScoreText);
     window.draw(rightScoreText);
+
+    if (roundStarting)
+        window.draw(countdownText);
 
     window.display();
 }
@@ -160,12 +176,16 @@ void Game::updateBall()
         rightScore += 1;
         rightScoreText.setString(std::to_string(rightScore));
         initGameObjects();
+        roundStarting = true;
+        roundStartClock.restart();
     }
     else if (ball.getPosition().x > window.getSize().x - 2 * ball.getRadius())
     {
         leftScore += 1;
         leftScoreText.setString(std::to_string(leftScore));
         initGameObjects();
+        roundStarting = true;
+        roundStartClock.restart();
     }
 }
 
@@ -205,3 +225,13 @@ void Game::initScores()
     leftScoreText.setString(std::to_string(leftScore));
     rightScoreText.setString(std::to_string(rightScore));
 }
+
+void Game::initCountdown()
+{
+    countdownText.setFont(font);
+    countdownText.setCharacterSize(40);
+    countdownText.setFillColor(sf::Color::White);
+    countdownText.setPosition(window.getSize().x / 2, 60);
+    countdownText.setString("3");
+}
+

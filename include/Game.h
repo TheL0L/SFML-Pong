@@ -25,6 +25,7 @@ private:
     void checkCollisions();
 
     void initScores();
+    void initCountdown();
 
     sf::RenderWindow window;
     int frameRate;
@@ -35,6 +36,7 @@ private:
     sf::CircleShape ball;
 
     bool isPlaying;
+    bool roundStarting;
 
     const float paddleWidth = 15.0f;
     const float paddleHeight = 100.0f;
@@ -50,4 +52,7 @@ private:
     sf::Font font;
     sf::Text leftScoreText;
     sf::Text rightScoreText;
+
+    sf::Clock roundStartClock;
+    sf::Text countdownText;
 };
