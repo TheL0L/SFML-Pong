@@ -65,6 +65,11 @@ void Game::initWindow()
 {
     window.setFramerateLimit(this->frameRate);
     backgroundColor = sf::Color::Black;
+
+    if (!font.loadFromFile("assets/Font/RobotoMono-Bold.ttf"))
+    {
+        backgroundColor = sf::Color(80, 0, 0, 255);
+    }
 }
 
 void Game::initGameObjects()
@@ -185,12 +190,6 @@ void Game::checkCollisions()
 
 void Game::initScores()
 {
-    if (!font.loadFromFile("assets/Font/RobotoMono-Bold.ttf"))
-    {
-        backgroundColor = sf::Color(80, 0, 0, 255);
-        return;
-    }
-
     const float windowHalfWidth = window.getSize().x / 2;
 
     leftScoreText.setFont(font);
