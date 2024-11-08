@@ -1,5 +1,4 @@
 #include "Game.h"
-#include <random>
 #include <cmath>
 
 int getRandomDirection() {
@@ -29,26 +28,39 @@ void enforceBallSpeedLimit(sf::Vector2f& ballDirection, float ballSpeed)
         ballDirection.x *= scale;
         ballDirection.y *= scale;
     }
+    else if (magnitude < ballSpeed * 0.9f)
+    {
+        float scale = ballSpeed * 0.9f / magnitude;
+
+        ballDirection.x *= scale;
+        ballDirection.y *= scale;
+    }
 }
 
 
 Game::Game() : window(sf::VideoMode(800, 600), "Pong"),
-    frameRate(60), isPlaying(true), roundStarting(true)
+    frameRate(60), isPlaying(true), roundStarting(true),
+    randomEngine(std::random_device{}()), difficultyIntervalDist(5, 15)
 {
     initWindow();
     initGameObjects();
     initScores();
     initCountdown();
+
+    nextDifficultyIncrease = difficultyIntervalDist(randomEngine);
 }
 
 Game::Game(int windowWidth, int windowHeight, int frameRate) :
     window(sf::VideoMode(windowWidth, windowHeight), "Pong"),
-    frameRate(frameRate), isPlaying(true), roundStarting(true)
+    frameRate(frameRate), isPlaying(true), roundStarting(true),
+    randomEngine(std::random_device{}()), difficultyIntervalDist(5, 15)
 {
     initWindow();
     initGameObjects();
     initScores();
     initCountdown();
+
+    nextDifficultyIncrease = difficultyIntervalDist(randomEngine);
 }
 
 Game::~Game() {}
@@ -122,6 +134,7 @@ void Game::update()
     {
         updateBall();
         checkCollisions();
+        updateDifficulty();
     }
 }
 
@@ -183,6 +196,7 @@ void Game::updateBall()
         initGameObjects();
         roundStarting = true;
         roundStartClock.restart();
+        ballSpeed = 3.0f;
     }
     else if (ball.getPosition().x > window.getSize().x - 2 * ball.getRadius())
     {
@@ -191,6 +205,7 @@ void Game::updateBall()
         initGameObjects();
         roundStarting = true;
         roundStartClock.restart();
+        ballSpeed = 3.0f;
     }
 }
 
@@ -278,4 +293,15 @@ void Game::renderBallTrail()
 void Game::clearBallTrail()
 {
     ballTrail.clear();
+}
+
+void Game::updateDifficulty()
+{
+    if (difficultyClock.getElapsedTime().asSeconds() >= nextDifficultyIncrease) {
+        ballSpeed *= 1.25f;
+        enforceBallSpeedLimit(ballDirection, ballSpeed);
+
+        difficultyClock.restart();
+        nextDifficultyIncrease = difficultyIntervalDist(randomEngine);
+    }
 }
