@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 #include <random>
 
@@ -32,6 +33,8 @@ private:
     void clearBallTrail();
 
     void updateDifficulty();
+
+    void loadSounds();
 
     sf::RenderWindow window;
     int frameRate;
@@ -69,4 +72,9 @@ private:
     std::mt19937 randomEngine;
     std::uniform_int_distribution<int> difficultyIntervalDist;
     int nextDifficultyIncrease = 5;
+
+    sf::SoundBuffer paddleHitBuffer;
+    sf::SoundBuffer goalBuffer;
+    sf::Sound paddleHitSound;
+    sf::Sound goalSound;
 };

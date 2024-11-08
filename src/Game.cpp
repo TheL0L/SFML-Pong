@@ -38,6 +38,7 @@ Game::Game(int windowWidth = 800, int windowHeight = 600, int frameRate = 60) :
     randomEngine(std::random_device{}()), difficultyIntervalDist(5, 15)
 {
     initWindow();
+    loadSounds();
     initGameObjects();
     initScores();
     initCountdown();
@@ -179,6 +180,7 @@ void Game::updateBall()
         roundStarting = true;
         roundStartClock.restart();
         ballSpeed = 3.0f;
+        goalSound.play();
     }
     else if (ball.getPosition().x > window.getSize().x - 2 * ball.getRadius())
     {
@@ -188,6 +190,7 @@ void Game::updateBall()
         roundStarting = true;
         roundStartClock.restart();
         ballSpeed = 3.0f;
+        goalSound.play();
     }
 }
 
@@ -201,12 +204,14 @@ void Game::checkCollisions()
         ballDirection.x = std::abs(ballDirection.x);
         ballDirection.y += getRandomDirection(randomEngine) * getRandomStrength(randomEngine, 2.0f);
         enforceBallSpeedLimit(ballDirection, ballSpeed);
+        paddleHitSound.play();
     }
 
     if (ballBounds.intersects(rightPaddleBounds)) {
         ballDirection.x = -std::abs(ballDirection.x);
         ballDirection.y += getRandomDirection(randomEngine) * getRandomStrength(randomEngine, 2.0f);
         enforceBallSpeedLimit(ballDirection, ballSpeed);
+        paddleHitSound.play();
     }
 }
 
@@ -286,4 +291,15 @@ void Game::updateDifficulty()
         difficultyClock.restart();
         nextDifficultyIncrease = difficultyIntervalDist(randomEngine);
     }
+}
+
+void Game::loadSounds()
+{
+    if (!paddleHitBuffer.loadFromFile("assets/Sounds/bounce.wav"))
+        backgroundColor = sf::Color(80, 0, 0, 255);
+    if (!goalBuffer.loadFromFile("assets/Sounds/goal.wav"))
+        backgroundColor = sf::Color(80, 0, 0, 255);
+
+    paddleHitSound.setBuffer(paddleHitBuffer);
+    goalSound.setBuffer(goalBuffer);
 }
