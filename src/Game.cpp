@@ -56,16 +56,6 @@ void Game::processEvents()
     {
         if (event.type == sf::Event::Closed) window.close();
     }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        leftPaddle.move(0, -paddleSpeed);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        leftPaddle.move(0, paddleSpeed);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        rightPaddle.move(0, -paddleSpeed);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        rightPaddle.move(0, paddleSpeed);
 }
 
 void Game::update()
@@ -88,7 +78,26 @@ void Game::render()
 
 void Game::updatePaddles()
 {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        leftPaddle.move(0, -paddleSpeed);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        leftPaddle.move(0, paddleSpeed);
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        rightPaddle.move(0, -paddleSpeed);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        rightPaddle.move(0, paddleSpeed);
+
+    
+    if (leftPaddle.getPosition().y < 0)
+        leftPaddle.setPosition(leftPaddle.getPosition().x, 0);
+    if (leftPaddle.getPosition().y > window.getSize().y - leftPaddle.getSize().y)
+        leftPaddle.setPosition(leftPaddle.getPosition().x, window.getSize().y - leftPaddle.getSize().y);
+    
+    if (rightPaddle.getPosition().y < 0)
+        rightPaddle.setPosition(rightPaddle.getPosition().x, 0);
+    if (rightPaddle.getPosition().y > window.getSize().y - rightPaddle.getSize().y)
+        rightPaddle.setPosition(rightPaddle.getPosition().x, window.getSize().y - rightPaddle.getSize().y);
 }
 
 void Game::updateBall()
