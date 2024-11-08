@@ -108,6 +108,15 @@ void Game::updatePaddles()
 
 void Game::updateBall()
 {
+    ball.move(ballDirection);
+
+    if (ball.getPosition().y < 0 || ball.getPosition().y > window.getSize().y - 2 * ball.getRadius())
+        ballDirection.y *= -1;
+
+    if (ball.getPosition().x < 0 || ball.getPosition().x > window.getSize().x - 2 * ball.getRadius())
+    {
+        ballDirection.x *= -1; // increase scores instead
+    }
 
 }
 
