@@ -33,7 +33,11 @@ private:
 
     bool isPlaying;
 
+    const float paddleWidth = 15.0f;
+    const float paddleHeight = 100.0f;
+    const float ballRadius = 10.0f;
+
     const float paddleSpeed = 5.0f;
-    const float ballSpeed = 4.0f;
+    const float ballSpeed = 3.0f;
     sf::Vector2f ballDirection;
 };

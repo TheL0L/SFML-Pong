@@ -1,7 +1,7 @@
 #include "Game.h"
 
 Game::Game() : window(sf::VideoMode(800, 600), "Pong"),
-    frameRate(60), isPlaying(true), ballDirection(0.5f, 0.5f)
+    frameRate(60), isPlaying(true)
 {
     initWindow();
     initGameObjects();
@@ -9,7 +9,7 @@ Game::Game() : window(sf::VideoMode(800, 600), "Pong"),
 
 Game::Game(int windowWidth, int windowHeight, int frameRate) :
     window(sf::VideoMode(windowWidth, windowHeight), "Pong"),
-    frameRate(frameRate), isPlaying(true), ballDirection(0.5f, 0.5f)
+    frameRate(frameRate), isPlaying(true)
 {
     initWindow();
     initGameObjects();
@@ -35,14 +35,18 @@ void Game::initWindow()
 
 void Game::initGameObjects()
 {
-    leftPaddle.setSize(sf::Vector2f(10, 100));
+    leftPaddle.setSize(sf::Vector2f(paddleWidth, paddleHeight));
     leftPaddle.setPosition(50, window.getSize().y / 2 - leftPaddle.getSize().y / 2);
+    leftPaddle.setFillColor(sf::Color::Green);
 
-    rightPaddle.setSize(sf::Vector2f(10, 100));
+    rightPaddle.setSize(sf::Vector2f(paddleWidth, paddleHeight));
     rightPaddle.setPosition(window.getSize().x - 50, window.getSize().y / 2 - rightPaddle.getSize().y / 2);
+    rightPaddle.setFillColor(sf::Color::Green);
 
-    ball.setRadius(10);
+    ball.setRadius(ballRadius);
     ball.setPosition(window.getSize().x / 2 - ball.getRadius(), window.getSize().y / 2 - ball.getRadius());
+    ball.setFillColor(sf::Color::Red);
+    ballDirection = sf::Vector2f(ballSpeed, ballSpeed);
 }
 
 void Game::processEvents()
