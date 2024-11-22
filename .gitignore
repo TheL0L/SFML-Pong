@@ -1,3 +1,6 @@
-.vscode/
-build/
-dist/
+build
+out
+.cache
+.idea
+.vs
+.vscode

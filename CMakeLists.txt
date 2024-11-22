@@ -1,12 +1,40 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.28)
+project(Pong LANGUAGES CXX)
 
-project(Pong)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
-find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
+include(FetchContent)
+FetchContent_Declare(SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.6.x
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM)
+FetchContent_MakeAvailable(SFML)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/dist)
+add_executable(${PROJECT_NAME} src/main.cpp src/game.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-audio)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
-add_executable(Pong src/main.cpp src/Game.cpp)
-target_include_directories(Pong PRIVATE include)
-target_link_libraries(Pong sfml-graphics sfml-window sfml-system sfml-audio)
+add_custom_command(
+    TARGET ${PROJECT_NAME}
+    COMMENT "Copy Assets"
+    PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/Assets
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/Assets
+    VERBATIM
+)
+
+if(WIN32)
+    add_custom_command(
+        TARGET ${PROJECT_NAME}
+        COMMENT "Copy OpenAL DLL"
+        PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        VERBATIM
+    )
+endif()
